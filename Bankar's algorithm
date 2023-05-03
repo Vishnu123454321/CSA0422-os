@@ -1,0 +1,96 @@
+#include <stdio.h>
+#include <stdbool.h>
+
+#define NUM_PROCESSES 4
+#define NUM_RESOURCES 3
+
+void calculate_need_matrix(int need_matrix[NUM_PROCESSES][NUM_RESOURCES],
+                           int max_matrix[NUM_PROCESSES][NUM_RESOURCES],
+                           int allocation_matrix[NUM_PROCESSES][NUM_RESOURCES])
+{
+    for (int i = 0; i < NUM_PROCESSES; i++) {
+        for (int j = 0; j < NUM_RESOURCES; j++) {
+            need_matrix[i][j] = max_matrix[i][j] - allocation_matrix[i][j];
+        }
+    }
+}
+
+bool is_safe_state(int available[NUM_RESOURCES],
+                   int allocation_matrix[NUM_PROCESSES][NUM_RESOURCES],
+                   int need_matrix[NUM_PROCESSES][NUM_RESOURCES])
+{
+    bool finish[NUM_PROCESSES] = { false };
+    int work[NUM_RESOURCES];
+
+    // initialize work to available
+    for (int i = 0; i < NUM_RESOURCES; i++) {
+        work[i] = available[i];
+    }
+
+    int num_finished = 0;
+
+    while (num_finished < NUM_PROCESSES) {
+        bool found = false;
+
+        for (int i = 0; i < NUM_PROCESSES; i++) {
+            if (!finish[i]) {
+                bool enough_resources = true;
+
+                for (int j = 0; j < NUM_RESOURCES; j++) {
+                    if (need_matrix[i][j] > work[j]) {
+                        enough_resources = false;
+                        break;
+                    }
+                }
+
+                if (enough_resources) {
+                    for (int j = 0; j < NUM_RESOURCES; j++) {
+                        work[j] += allocation_matrix[i][j];
+                    }
+                    finish[i] = true;
+                    num_finished++;
+                    found = true;
+                    break;
+                }
+            }
+        }
+
+        if (!found) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+int main()
+{
+    int claim_matrix[NUM_PROCESSES][NUM_RESOURCES] = {
+        { 3, 2, 2 },
+        { 6, 1, 3 },
+        { 3, 1, 4 },
+        { 4, 2, 2 }
+    };
+
+    int allocation_matrix[NUM_PROCESSES][NUM_RESOURCES] = {
+        { 1, 0, 0 },
+        { 6, 1, 2 },
+        { 2, 1, 1 },
+        { 0, 0, 2 }
+    };
+
+    int available[NUM_RESOURCES] = { 9, 3, 6 };
+
+    int need_matrix[NUM_PROCESSES][NUM_RESOURCES];
+    calculate_need_matrix(need_matrix, claim_matrix, allocation_matrix);
+
+    bool safe = is_safe_state(available, allocation_matrix, need_matrix);
+
+    if (safe) {
+        printf("The system is in a safe state.\n");
+    } else {
+        printf("The system is in an unsafe state.\n");
+    }
+
+    return 0;
+}
