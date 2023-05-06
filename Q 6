@@ -1,0 +1,83 @@
+#include <stdio.h>
+#include <stdbool.h>
+
+int main() {
+    int max[3][3] = {{3, 6, 8}, {4, 3, 3}, {3, 4, 4}};
+    int alloc[3][3] = {{3, 3, 3}, {2, 0, 3}, {1, 2, 4}};
+    int avail[3] = {1, 2, 0};
+    bool finish[3] = {false, false, false};
+    bool deadlocked = false;
+
+    // Calculate the need matrix
+    int need[3][3];
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            need[i][j] = max[i][j] - alloc[i][j];
+        }
+    }
+
+    // Try to find a safe sequence
+    int safe_seq[3];
+    int work[3];
+    for (int i = 0; i < 3; i++) {
+        work[i] = avail[i];
+    }
+    int count = 0;
+    while (count < 3) {
+        bool found = false;
+        for (int i = 0; i < 3; i++) {
+            if (!finish[i]) {
+                bool can_be_allocated = true;
+                for (int j = 0; j < 3; j++) {
+                    if (need[i][j] > work[j]) {
+                        can_be_allocated = false;
+                        break;
+                    }
+                }
+                if (can_be_allocated) {
+                    for (int j = 0; j < 3; j++) {
+                        work[j] += alloc[i][j];
+                    }
+                    safe_seq[count] = i;
+                    count++;
+                    finish[i] = true;
+                    found = true;
+                }
+            }
+        }
+        if (!found) {
+            deadlocked = true;
+            break;
+        }
+    }
+
+    // Print the safe sequence or the deadlock message
+    if (deadlocked) {
+        printf("The system is in a deadlock state.\n");
+        printf("The deadlocked processes are: ");
+        for (int i = 0; i < 3; i++) {
+            if (!finish[i]) {
+                printf("%d ", i);
+            }
+        }
+        printf("\n");
+    } else {
+        printf("The system is not in a deadlock state.\n");
+        printf("The safe sequence is: ");
+        for (int i = 0; i < 3; i++) {
+            printf("%d ", safe_seq[i]);
+        }
+        printf("\n");
+    }
+
+    return 0;
+}
+Footer
+© 2023 GitHub, Inc.
+Footer navigation
+Terms
+Privacy
+Security
+Status
+Docs
+Contact GitHub
