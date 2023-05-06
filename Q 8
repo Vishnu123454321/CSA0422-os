@@ -1,0 +1,54 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX 100
+
+void fcfs(int n, int head, int queue[]) {
+    int i, total_head_movement = 0;
+    printf("FCFS Disk Scheduling:\n");
+    printf("Head Movement:\n");
+    for (i = 0; i < n; i++) {
+        total_head_movement += abs(head - queue[i]);
+        printf("Move from %d to %d\n", head, queue[i]);
+        head = queue[i];
+    }
+    printf("Total Head Movement: %d\n", total_head_movement);
+    printf("Average Head Movement: %.2f\n", (float)total_head_movement / n);
+}
+
+int main() {
+    int n, i, head, queue[MAX];
+    printf("Enter the number of tracks: ");
+    scanf("%d", &n);
+    printf("Enter the track position of each request:\n");
+    for (i = 0; i < n; i++) {
+        scanf("%d", &queue[i]);
+    }
+    printf("Enter the initial head position: ");
+    scanf("%d", &head);
+    fcfs(n, head, queue);
+    return 0;
+}
+
+//SAMPLE INPUT//
+
+Enter the number of tracks: 5
+Enter the track position of each request:
+55
+58
+60
+70
+18
+Enter the initial head position: 50
+
+//SAMPLE OUTPUT//
+
+FCFS Disk Scheduling:
+Head Movement:
+Move from 50 to 55
+Move from 55 to 58
+Move from 58 to 60
+Move from 60 to 70
+Move from 70 to 18
+Total Head Movement: 125
+Average Head Movement: 25.00
