@@ -1,0 +1,40 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_FILES 100
+#define MAX_FILENAME_LENGTH 20
+
+typedef struct {
+    char name[MAX_FILENAME_LENGTH];
+} File;
+
+typedef struct {
+    char name[MAX_FILENAME_LENGTH];
+    File files[MAX_FILES];
+    int num_files;
+} Directory;
+
+int main() {
+    Directory cse_directory;
+    strcpy(cse_directory.name, "CSE");
+    cse_directory.num_files = 0;
+
+    // Add files to the CSE directory
+    File file_a, file_b, file_c;
+    strcpy(file_a.name, "A");
+    strcpy(file_b.name, "B");
+    strcpy(file_c.name, "C");
+    cse_directory.files[cse_directory.num_files++] = file_a;
+    cse_directory.files[cse_directory.num_files++] = file_b;
+    cse_directory.files[cse_directory.num_files++] = file_c;
+
+    // Print the contents of the CSE directory
+    printf("Directory: %s\n", cse_directory.name);
+    printf("Number of files: %d\n", cse_directory.num_files);
+    for (int i = 0; i < cse_directory.num_files; i++) {
+        printf("File %d: %s\n", i+1, cse_directory.files[i].name);
+    }
+
+    return 0;
+}
