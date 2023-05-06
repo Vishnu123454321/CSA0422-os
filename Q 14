@@ -1,0 +1,60 @@
+#include <stdio.h>
+#include <stdbool.h>
+
+#define MAX_PAGE_FRAMES 10
+
+int main() {
+    int page_frames[MAX_PAGE_FRAMES];
+    int num_page_frames;
+    int page_reference_string[] = {7,0,1,2,0,3,0,4,2,3,0,3,2,1,2,0,1,7,0,1};
+    int num_page_reference = sizeof(page_reference_string) / sizeof(page_reference_string[0]);
+    int num_page_faults = 0;
+
+    printf("Enter the number of page frames: ");
+    scanf("%d", &num_page_frames);
+
+    for (int i = 0; i < num_page_frames; i++) {
+        page_frames[i] = -1; // initialize page frames with -1 to indicate they are empty
+    }
+
+    for (int i = 0; i < num_page_reference; i++) {
+        int page = page_reference_string[i];
+        bool page_fault = true;
+
+        // check if page is already in a page frame
+        for (int j = 0; j < num_page_frames; j++) {
+            if (page_frames[j] == page) {
+                page_fault = false;
+                break;
+            }
+        }
+
+        if (page_fault) {
+            num_page_faults++;
+
+            // find the page that will not be used for the longest time in the future
+            int max_future_distance = -1;
+            int max_future_page_index = -1;
+            for (int j = 0; j < num_page_frames; j++) {
+                int future_distance = 0;
+                for (int k = i + 1; k < num_page_reference; k++) {
+                    if (page_frames[j] == page_reference_string[k]) {
+                        future_distance = k - i;
+                        break;
+                    }
+                }
+                if (future_distance > max_future_distance) {
+                    max_future_distance = future_distance;
+                    max_future_page_index = j;
+                }
+            }
+
+            // replace the page that will not be used for the longest time in the future with the new page
+            page_frames[max_future_page_index] = page;
+        }
+    }
+
+    printf("Number of page faults: %d\n", num_page_faults);
+
+    return 0;
+}
