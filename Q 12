@@ -1,0 +1,73 @@
+#include<stdio.h>
+
+void bestFit(int memPartitions[], int n, int processSizes[], int m) {
+    int i, j, bestFitBlock;
+    int allocation[m];
+  
+    for (i = 0; i < m; i++) {
+        bestFitBlock = -1;
+        for (j = 0; j < n; j++) {
+            if (memPartitions[j] >= processSizes[i]) {
+                if (bestFitBlock == -1) {
+                    bestFitBlock = j;
+                }
+                else if (memPartitions[bestFitBlock] > memPartitions[j]) {
+                    bestFitBlock = j;
+                }
+            }
+        }
+        if (bestFitBlock != -1) {
+            allocation[i] = bestFitBlock;
+            memPartitions[bestFitBlock] -= processSizes[i];
+        }
+        else {
+            allocation[i] = -1;
+        }
+    }
+  
+    printf("\nProcess No.\tProcess Size\tMemory Partition No.\n");
+    for (i = 0; i < m; i++) {
+        printf("   %d\t\t   %d", i+1, processSizes[i]);
+        if (allocation[i] != -1) {
+            printf("\t\t   %d", allocation[i]+1);
+        }
+        else {
+            printf("\t\t   Not Allocated");
+        }
+        printf("\n");
+    }
+}
+
+int main() {
+    int memPartitions[] = {300, 600, 350, 200, 750, 125};
+    int processSizes[] = {115, 500, 358, 200, 375};
+    int n = sizeof(memPartitions) / sizeof(memPartitions[0]);
+    int m = sizeof(processSizes) / sizeof(processSizes[0]);
+  
+    printf("\nMemory Partitions:");
+    for (int i = 0; i < n; i++) {
+        printf(" %d KB", memPartitions[i]);
+    }
+  
+    printf("\n\nProcess Sizes:");
+    for (int i = 0; i < m; i++) {
+        printf(" %d KB", processSizes[i]);
+    }
+  
+    bestFit(memPartitions, n, processSizes, m);
+  
+    return 0;
+}
+
+//OUTPUT//
+
+Memory Partitions: 300 KB 600 KB 350 KB 200 KB 750 KB 125 KB
+
+Process Sizes: 115 KB 500 KB 358 KB 200 KB 375 KB
+
+Process No.      Process Size    Memory Partition No.
+   1                  115                1
+   2                  500                5
+   3                  358                2
+   4                  200                4
+   5                  375                6
