@@ -1,0 +1,35 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX_QUEUE_SIZE 100
+
+int main() {
+    int queue[MAX_QUEUE_SIZE];
+    int head_position;
+    int num_tracks;
+    int total_head_movement = 0;
+
+    printf("Enter the number of tracks: ");
+    scanf("%d", &num_tracks);
+
+    printf("Enter the initial head position: ");
+    scanf("%d", &head_position);
+
+    printf("Enter the track queue:\n");
+    for (int i = 0; i < num_tracks; i++) {
+        scanf("%d", &queue[i]);
+    }
+    queue[num_tracks] = head_position;
+    num_tracks++;
+    for (int i = 0; i < num_tracks - 1; i++) {
+        int current_track = queue[i];
+        int next_track = queue[i+1];
+
+        total_head_movement += abs(next_track - current_track);
+    }
+
+    printf("Total head movement: %d\n", total_head_movement);
+    printf("Average head movement: %0.2f\n", (float) total_head_movement / (num_tracks - 1));
+
+    return 0;
+}
