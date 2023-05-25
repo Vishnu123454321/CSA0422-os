@@ -1,0 +1,73 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_USERS 10
+#define MAX_FILES 10
+#define MAX_FILENAME_LEN 20
+#define MAX_PATH_LEN 50
+
+struct file {
+    char name[MAX_FILENAME_LEN];
+    int size;
+};
+
+struct user {
+    char name[MAX_FILENAME_LEN];
+    int num_files;
+    struct file files[MAX_FILES];
+};
+
+struct directory {
+    char name[MAX_FILENAME_LEN];
+    int num_users;
+    struct user users[MAX_USERS];
+};
+
+struct filesystem {
+    int num_dirs;
+    struct directory dirs[MAX_USERS];
+};
+
+int main() {
+    struct filesystem fs;
+    fs.num_dirs = 0;
+
+    // Create user directories
+    strcpy(fs.dirs[fs.num_dirs].name, "user1");
+    fs.dirs[fs.num_dirs].num_users = 0;
+    fs.num_dirs++;
+    strcpy(fs.dirs[fs.num_dirs].name, "user2");
+    fs.dirs[fs.num_dirs].num_users = 0;
+    fs.num_dirs++;
+    strcpy(fs.dirs[fs.num_dirs].name, "user3");
+    fs.dirs[fs.num_dirs].num_users = 0;
+    fs.num_dirs++;
+
+    // Add files to user directories
+    strcpy(fs.dirs[0].users[fs.dirs[0].num_users].name, "file1.txt");
+    fs.dirs[0].users[fs.dirs[0].num_users].num_files = 1;
+    strcpy(fs.dirs[0].users[fs.dirs[0].num_users].files[0].name, "file1.txt");
+    fs.dirs[0].users[fs.dirs[0].num_users].files[0].size = 100;
+    fs.dirs[0].num_users++;
+
+    strcpy(fs.dirs[1].users[fs.dirs[1].num_users].name, "file2.txt");
+    fs.dirs[1].users[fs.dirs[1].num_users].num_files = 1;
+    strcpy(fs.dirs[1].users[fs.dirs[1].num_users].files[0].name, "file2.txt");
+    fs.dirs[1].users[fs.dirs[1].num_users].files[0].size = 200;
+    fs.dirs[1].num_users++;
+
+    strcpy(fs.dirs[2].users[fs.dirs[2].num_users].name, "file3.txt");
+    fs.dirs[2].users[fs.dirs[2].num_users].num_files = 1;
+    strcpy(fs.dirs[2].users[fs.dirs[2].num_users].files[0].name, "file3.txt");
+    fs.dirs[2].users[fs.dirs[2].num_users].files[0].size = 300;
+    fs.dirs[2].num_users++;
+
+    printf("Directory structure:\n");
+    for (int i = 0; i < fs.num_dirs; i++) {
+        printf("%s:\n", fs.dirs[i].name);
+        for (int j = 0; j < fs.dirs[i].num_users; j++) {
+            printf("  %s:\n", fs.dirs[i].users[j].name);
+            for (int k = 0; k < fs.dirs[i].users[j].num_files; k++) {
+                printf("    %s (%d bytes)\n", fs.dirs[i].users[j].files[k].name,
+                    fs.dirs[i].users[j].files
