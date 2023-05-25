@@ -1,0 +1,52 @@
+#include<stdio.h>
+
+struct Process {
+    int burstTime;
+    int priority;
+    int waitingTime;
+    int turnaroundTime;
+};
+
+// Function to calculate the average waiting time and average turnaround time
+void calculateAverageTimes(struct Process processes[], int n) {
+    int i, totalWaitingTime = 0, totalTurnaroundTime = 0;
+
+    // Calculate waiting time and turnaround time for each process
+    for (i = 0; i < n; i++) {
+        if (i == 0) {
+            processes[i].waitingTime = 0;
+        } else {
+            processes[i].waitingTime = processes[i - 1].burstTime + processes[i - 1].waitingTime;
+        }
+        processes[i].turnaroundTime = processes[i].burstTime + processes[i].waitingTime;
+
+        totalWaitingTime += processes[i].waitingTime;
+        totalTurnaroundTime += processes[i].turnaroundTime;
+    }
+
+    // Calculate average waiting time and average turnaround time
+    float avgWaitingTime = (float)totalWaitingTime / n;
+    float avgTurnaroundTime = (float)totalTurnaroundTime / n;
+
+    // Print the results
+    printf("Process\tBurst Time\tPriority\tWaiting Time\tTurnaround Time\n");
+    for (i = 0; i < n; i++) {
+        printf("P%d\t\t%d\t\t%d\t\t%d\t\t%d\n", i + 1, processes[i].burstTime, processes[i].priority, processes[i].waitingTime, processes[i].turnaroundTime);
+    }
+    printf("\nAverage Waiting Time: %.2f\n", avgWaitingTime);
+    printf("Average Turnaround Time: %.2f\n", avgTurnaroundTime);
+}
+
+int main() {
+    struct Process processes[] = {
+        {30, 2},
+        {5, 1},
+        {12, 3}
+    };
+
+    int numProcesses = sizeof(processes) / sizeof(processes[0]);
+
+    calculateAverageTimes(processes, numProcesses);
+
+    return 0;
+}
