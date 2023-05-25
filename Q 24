@@ -1,0 +1,26 @@
+#include <stdio.h>
+
+#define DISK_BLOCK_SIZE 8192  // 8 KB
+#define POINTER_SIZE 4        // Size of a pointer in bytes
+#define DIRECT_BLOCKS 12
+#define INDIRECT_POINTERS (DISK_BLOCK_SIZE / POINTER_SIZE)
+#define DOUBLE_INDIRECT_POINTERS (INDIRECT_POINTERS * INDIRECT_POINTERS)
+#define TRIPLE_INDIRECT_POINTERS (DOUBLE_INDIRECT_POINTERS * INDIRECT_POINTERS)
+
+int main() {
+    long long maxFileSize = 0;
+    maxFileSize += DIRECT_BLOCKS * DISK_BLOCK_SIZE;  // Direct blocks
+
+    long long indirectBlocks = INDIRECT_POINTERS * DISK_BLOCK_SIZE / POINTER_SIZE;
+    maxFileSize += indirectBlocks * DISK_BLOCK_SIZE;  // Single indirect blocks
+
+    long long doubleIndirectBlocks = DOUBLE_INDIRECT_POINTERS * DISK_BLOCK_SIZE / POINTER_SIZE;
+    maxFileSize += doubleIndirectBlocks * DISK_BLOCK_SIZE;  // Double indirect blocks
+
+    long long tripleIndirectBlocks = TRIPLE_INDIRECT_POINTERS * DISK_BLOCK_SIZE / POINTER_SIZE;
+    maxFileSize += tripleIndirectBlocks * DISK_BLOCK_SIZE;  // Triple indirect blocks
+
+    printf("Maximum file size: %lld bytes\n", maxFileSize);
+
+    return 0;
+}
