@@ -1,0 +1,47 @@
+#include <stdio.h>
+
+#define MAX_PARTITIONS 5
+
+void firstFit(int partitions[], int numPartitions, int processes[], int numProcesses) {
+    int allocation[MAX_PARTITIONS] = {0}; // Array to track partition allocation status
+
+    // Iterate over each process
+    for (int i = 0; i < numProcesses; i++) {
+        int processSize = processes[i];
+        int allocated = 0; // Flag to indicate if the process has been allocated
+
+        // Iterate over each partition
+        for (int j = 0; j < numPartitions; j++) {
+            // Check if the partition is free and large enough to hold the process
+            if (allocation[j] == 0 && partitions[j] >= processSize) {
+                allocation[j] = processSize; // Allocate the process to the partition
+                printf("Process %d (Size: %d KB) allocated to Partition %d (Size: %d KB)\n",
+                       i + 1, processSize, j + 1, partitions[j]);
+                allocated = 1; // Set the flag to indicate successful allocation
+                break;
+            }
+        }
+
+        // If the process was not allocated, print an error message
+        if (!allocated) {
+            printf("Process %d (Size: %d KB) could not be allocated\n", i + 1, processSize);
+        }
+    }
+}
+
+int main() {
+    int partitions[MAX_PARTITIONS] = {40, 10, 30, 60}; // Memory partitions in KB
+    int processes[] = {100, 50, 30, 120, 35}; // Processes sizes in KB
+    int numPartitions = sizeof(partitions) / sizeof(partitions[0]);
+    int numProcesses = sizeof(processes) / sizeof(processes[0]);
+
+    printf("Memory Partitions:\n");
+    for (int i = 0; i < numPartitions; i++) {
+        printf("Partition %d: %d KB\n", i + 1, partitions[i]);
+    }
+
+    printf("\nFirst-Fit Algorithm:\n");
+    firstFit(partitions, numPartitions, processes, numProcesses);
+
+    return 0;
+}
