@@ -1,0 +1,55 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX_PROCESSES 3
+
+struct process {
+    int pid; // process id
+    int bt; // burst time
+    int wt; // waiting time
+    int tat; // turnaround time
+    int rt; // remaining time
+};
+
+int main() {
+    struct process processes[MAX_PROCESSES] = {
+        {1, 24, 0, 0, 0},
+        {2, 3, 0, 0, 0},
+        {3, 3, 0, 0, 0}
+    };
+    int quantum = 4;
+    int t = 0; // current time
+    int done = 0; // number of processes completed
+    float total_wt = 0, total_tat = 0;
+
+    while (done < MAX_PROCESSES) {
+        for (int i = 0; i < MAX_PROCESSES; i++) {
+            if (processes[i].rt > 0) {
+                if (processes[i].rt > quantum) {
+                    t += quantum;
+                    processes[i].rt -= quantum;
+                } else {
+                    t += processes[i].rt;
+                    processes[i].wt = t - processes[i].bt;
+                    processes[i].rt = 0;
+                    processes[i].tat = t;
+                    total_wt += processes[i].wt;
+                    total_tat += processes[i].tat;
+                    done++;
+                }
+            }
+        }
+    }
+
+    float avg_wt = total_wt / MAX_PROCESSES;
+    float avg_tat = total_tat / MAX_PROCESSES;
+
+    printf("Process\tBurst Time\tWaiting Time\tTurnaround Time\n");
+    for (int i = 0; i < MAX_PROCESSES; i++) {
+        printf("P%d\t%d\t\t%d\t\t%d\n", processes[i].pid, processes[i].bt, processes[i].wt, processes[i].tat);
+    }
+    printf("Average waiting time: %.2f ms\n", avg_wt);
+    printf("Average turnaround time: %.2f ms\n", avg_tat);
+
+    return 0;
+}
