@@ -1,0 +1,30 @@
+#include <stdio.h>
+#include <pthread.h>
+
+void *printEven(void *arg) {
+    for (int i = 2; i <= 10; i += 2) {
+        printf("Even Thread: %d\n", i);
+    }
+    pthread_exit(NULL);
+}
+
+void *printOdd(void *arg) {
+    for (int i = 1; i <= 10; i += 2) {
+        printf("Odd Thread: %d\n", i);
+    }
+    pthread_exit(NULL);
+}
+
+int main() {
+    pthread_t evenThread, oddThread;
+
+    // Create the threads
+    pthread_create(&evenThread, NULL, printEven, NULL);
+    pthread_create(&oddThread, NULL, printOdd, NULL);
+
+    // Wait for the threads to finish
+    pthread_join(evenThread, NULL);
+    pthread_join(oddThread, NULL);
+
+    return 0;
+}
