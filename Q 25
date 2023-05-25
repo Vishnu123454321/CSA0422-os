@@ -1,0 +1,55 @@
+#include <stdio.h>
+
+#define BLOCK_SIZE 1    // Size of a block in KB
+#define FILE_SIZE 100   // Number of blocks in the file
+
+// Calculate the number of disk I/O operations for contiguous allocation
+int calculateContiguousIO() {
+    int numIO = 0;
+
+    // Calculate the number of blocks accessed
+    int numBlocksAccessed = FILE_SIZE;
+
+    // Calculate the number of disk I/O operations
+    numIO = numBlocksAccessed + 1;  // 1 for the file control block
+
+    return numIO;
+}
+
+// Calculate the number of disk I/O operations for linked allocation
+int calculateLinkedIO() {
+    int numIO = 0;
+
+    // Calculate the number of blocks accessed
+    int numBlocksAccessed = FILE_SIZE;
+
+    // Calculate the number of disk I/O operations
+    numIO = numBlocksAccessed + 1;  // 1 for the file control block
+
+    return numIO;
+}
+
+// Calculate the number of disk I/O operations for indexed (single-level) allocation
+int calculateIndexedIO() {
+    int numIO = 0;
+
+    // Calculate the number of blocks accessed
+    int numBlocksAccessed = FILE_SIZE / BLOCK_SIZE + 1;  // 1 for the index block
+
+    // Calculate the number of disk I/O operations
+    numIO = numBlocksAccessed + 1;  // 1 for the file control block
+
+    return numIO;
+}
+
+int main() {
+    int contiguousIO = calculateContiguousIO();
+    int linkedIO = calculateLinkedIO();
+    int indexedIO = calculateIndexedIO();
+
+    printf("Disk I/O operations for contiguous allocation: %d\n", contiguousIO);
+    printf("Disk I/O operations for linked allocation: %d\n", linkedIO);
+    printf("Disk I/O operations for indexed (single-level) allocation: %d\n", indexedIO);
+
+    return 0;
+}
