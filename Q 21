@@ -1,0 +1,77 @@
+import threading
+import time
+
+# Constants
+NUM_PHILOSOPHERS = 5
+EATING_TIME = 2
+THINKING_TIME = 2
+
+# Enum for philosopher states
+class PhilosopherState:
+    THINKING = 0
+    HUNGRY = 1
+    EATING = 2
+
+# Mutex for forks
+fork_mutexes = [threading.Lock() for i in range(NUM_PHILOSOPHERS)]
+
+# Philosopher states
+philosopher_states = [PhilosopherState.THINKING for i in range(NUM_PHILOSOPHERS)]
+
+# Condition variables for philosopher states
+philosopher_cv = threading.Condition()
+
+# Function for philosopher to pick up forks
+def pick_up_forks(philosopher_id):
+    philosopher_cv.acquire()
+    philosopher_states[philosopher_id] = PhilosopherState.HUNGRY
+    test(philosopher_id)
+    while philosopher_states[philosopher_id] != PhilosopherState.EATING:
+        philosopher_cv.wait()
+    philosopher_cv.release()
+
+# Function for philosopher to put down forks
+def put_down_forks(philosopher_id):
+    philosopher_cv.acquire()
+    philosopher_states[philosopher_id] = PhilosopherState.THINKING
+    test((philosopher_id + 4) % NUM_PHILOSOPHERS)
+    test((philosopher_id + 1) % NUM_PHILOSOPHERS)
+    philosopher_cv.release()
+
+# Function to check if philosopher can start eating
+def test(philosopher_id):
+    if (philosopher_states[(philosopher_id + 4) % NUM_PHILOSOPHERS] != PhilosopherState.EATING and
+        philosopher_states[philosopher_id] == PhilosopherState.HUNGRY and
+        philosopher_states[(philosopher_id + 1) % NUM_PHILOSOPHERS] != PhilosopherState.EATING):
+        philosopher_states[philosopher_id] = PhilosopherState.EATING
+        fork_mutexes[philosopher_id].acquire()
+        fork_mutexes[(philosopher_id + 1) % NUM_PHILOSOPHERS].acquire()
+        philosopher_cv.notify_all()
+
+# Function for philosopher to eat
+def eat(philosopher_id):
+    print("Philosopher", philosopher_id, "is eating")
+    time.sleep(EATING_TIME)
+    print("Philosopher", philosopher_id, "finished eating")
+    put_down_forks(philosopher_id)
+
+# Function for philosopher to think
+def think(philosopher_id):
+    print("Philosopher", philosopher_id, "is thinking")
+    time.sleep(THINKING_TIME)
+    print("Philosopher", philosopher_id, "finished thinking")
+    pick_up_forks(philosopher_id)
+    eat(philosopher_id)
+
+# Main function to simulate the dining philosophers problem
+def main():
+    philosophers = []
+    for i in range(NUM_PHILOSOPHERS):
+        philosophers.append(threading.Thread(target=think, args=(i,)))
+    for philosopher in philosophers:
+        philosopher.start()
+    for philosopher in philosophers:
+        philosopher.join()
+
+if __name__ == '__main__':
+    main()
