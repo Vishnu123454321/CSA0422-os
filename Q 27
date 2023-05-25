@@ -1,0 +1,53 @@
+#include <stdio.h>
+#include <pthread.h>
+#include <semaphore.h>
+
+sem_t semaphore;
+
+void* process(void* processName) {
+    char* name = (char*)processName;
+
+    printf("%s is waiting on semaphore S\n", name);
+    sem_wait(&semaphore);
+    printf("%s enters the critical section\n", name);
+
+    // Simulating some work in the critical section
+    sleep(2);
+
+    printf("%s exits the critical section\n", name);
+    sem_post(&semaphore);
+
+    pthread_exit(NULL);
+}
+
+int main() {
+    sem_init(&semaphore, 0, 4); // Initialize the semaphore with 4 instances
+
+    pthread_t threads[4];
+    char* processNames[4] = {"P1", "P2", "P3", "P4"};
+
+    // Create threads for the processes
+    for (int i = 0; i < 4; i++) {
+        pthread_create(&threads[i], NULL, process, (void*)processNames[i]);
+    }
+
+    // Wait for the threads to finish
+    for (int i = 0; i < 4; i++) {
+        pthread_join(threads[i], NULL);
+    }
+
+    // Process P5 wants the same resource
+    printf("P5 is waiting on semaphore S\n");
+    sem_wait(&semaphore);
+    printf("P5 enters the critical section\n");
+
+    // Simulating some work in the critical section
+    sleep(2);
+
+    printf("P5 exits the critical section\n");
+    sem_post(&semaphore);
+
+    sem_destroy(&semaphore);
+
+    return 0;
+}
