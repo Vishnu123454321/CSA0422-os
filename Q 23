@@ -1,0 +1,60 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<math.h>
+
+// Function to sort the array in ascending order
+void sortArray(int arr[], int size) {
+    int i, j, temp;
+    for (i = 0; i < size - 1; i++) {
+        for (j = 0; j < size - i - 1; j++) {
+            if (arr[j] > arr[j + 1]) {
+                temp = arr[j];
+                arr[j] = arr[j + 1];
+                arr[j + 1] = temp;
+            }
+        }
+    }
+}
+
+// Function to calculate the average head movement
+float calculateAverageHeadMovement(int trackPos[], int size, int start) {
+    int i, headMovement = 0;
+    int currentIndex = -1;
+
+    // Find the index of the start track position
+    for (i = 0; i < size; i++) {
+        if (trackPos[i] == start) {
+            currentIndex = i;
+            break;
+        }
+    }
+
+    if (currentIndex == -1) {
+        printf("Start track position not found.\n");
+        return -1;
+    }
+
+    // Sort the track positions in ascending order
+    sortArray(trackPos, size);
+
+    // Calculate the head movement
+    headMovement = abs(trackPos[currentIndex] - trackPos[0]);
+    for (i = 1; i < size; i++) {
+        headMovement += abs(trackPos[i] - trackPos[i - 1]);
+    }
+
+    // Return the average head movement
+    return (float)headMovement / size;
+}
+
+int main() {
+    int tracks[] = {55, 58, 60, 70, 18};
+    int numTracks = sizeof(tracks) / sizeof(tracks[0]);
+    int startPosition = 55;
+
+    float averageHeadMovement = calculateAverageHeadMovement(tracks, numTracks, startPosition);
+
+    printf("Average head movement: %.2f\n", averageHeadMovement);
+
+    return 0;
+}
