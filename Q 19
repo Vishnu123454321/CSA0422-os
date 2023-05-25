@@ -1,0 +1,50 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
+#include <semaphore.h>
+
+#define SHARED_MEMORY_INITIAL_VALUE 42
+
+int shared_memory = SHARED_MEMORY_INITIAL_VALUE;
+sem_t semaphore;
+
+void *thread1(void *arg) {
+    int data;
+    while (1) {
+        sem_wait(&semaphore);
+        data = shared_memory;
+        shared_memory *= 2;
+        sem_post(&semaphore);
+        printf("Thread 1: %d * 2 = %d\n", data, shared_memory);
+        usleep(rand() % 1000000);  // Sleep for up to 1 second
+    }
+    return NULL;
+}
+
+void *thread2(void *arg) {
+    int data;
+    while (1) {
+        sem_wait(&semaphore);
+        data = shared_memory;
+        shared_memory *= 5;
+        sem_post(&semaphore);
+        printf("Thread 2: %d * 5 = %d\n", data, shared_memory);
+        usleep(rand() % 1000000);  // Sleep for up to 1 second
+    }
+    return NULL;
+}
+
+int main() {
+    pthread_t t1, t2;
+
+    sem_init(&semaphore, 0, 1);
+    pthread_create(&t1, NULL, thread1, NULL);
+    pthread_create(&t2, NULL, thread2, NULL);
+
+    pthread_join(t1, NULL);
+    pthread_join(t2, NULL);
+
+    sem_destroy(&semaphore);
+
+    return 0;
+}
