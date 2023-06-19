@@ -1,0 +1,45 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <limits.h>
+
+// Function to find the nearest track from the current position
+int findNearestTrack(int tracks[], int n, int currentTrack) {
+    int nearestTrack = -1;
+    int minDistance = INT_MAX;
+
+    for (int i = 0; i < n; i++) {
+        int distance = abs(tracks[i] - currentTrack);
+        if (distance < minDistance) {
+            minDistance = distance;
+            nearestTrack = tracks[i];
+        }
+    }
+
+    return nearestTrack;
+}
+
+// Function to calculate the average head movement
+float calculateAverageHeadMovement(int tracks[], int n, int start) {
+    int headMovement = 0;
+    int currentTrack = start;
+
+    for (int i = 0; i < n; i++) {
+        int nearestTrack = findNearestTrack(tracks, n, currentTrack);
+        headMovement += abs(nearestTrack - currentTrack);
+        currentTrack = nearestTrack;
+    }
+
+    return (float)headMovement / n;
+}
+
+int main() {
+    int tracks[] = {55, 58, 60, 70, 18};
+    int numOfTracks = sizeof(tracks) / sizeof(tracks[0]);
+    int startingTrack = 50; // Assuming the initial track position is 50
+
+    float averageHeadMovement = calculateAverageHeadMovement(tracks, numOfTracks, startingTrack);
+
+    printf("Average Head Movement: %.2f\n", averageHeadMovement);
+
+    return 0;
+}
