@@ -1,0 +1,71 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
+// Function to calculate the absolute difference between two integers
+int absDiff(int a, int b) {
+    return abs(a - b);
+}
+
+// Function to simulate the LOOK disk scheduling algorithm
+int lookDiskScheduling(int tracks[], int numTracks, int startTrack) {
+    int headMovement = 0;
+    int currentTrack = startTrack;
+    bool directionUp = true;
+
+    // Find the closest track in the upward direction
+    int closestTrackUp = tracks[0];
+    for (int i = 1; i < numTracks; i++) {
+        if (tracks[i] > currentTrack && tracks[i] < closestTrackUp) {
+            closestTrackUp = tracks[i];
+        }
+    }
+
+    // Find the closest track in the downward direction
+    int closestTrackDown = tracks[numTracks - 1];
+    for (int i = numTracks - 2; i >= 0; i--) {
+        if (tracks[i] < currentTrack && tracks[i] > closestTrackDown) {
+            closestTrackDown = tracks[i];
+        }
+    }
+
+    // Start by moving towards the closest track in the upward direction
+    int nextTrack = closestTrackUp;
+    directionUp = true;
+
+    while (nextTrack != currentTrack) {
+        headMovement += absDiff(currentTrack, nextTrack);
+        currentTrack = nextTrack;
+
+        if (directionUp) {
+            nextTrack = closestTrackUp;
+        } else {
+            nextTrack = closestTrackDown;
+        }
+
+        // If there are no more tracks in the current direction, change direction
+        if (nextTrack == currentTrack) {
+            if (directionUp) {
+                nextTrack = closestTrackDown;
+                directionUp = false;
+            } else {
+                nextTrack = closestTrackUp;
+                directionUp = true;
+            }
+        }
+    }
+
+    return headMovement;
+}
+
+int main() {
+    int tracks[] = {55, 58, 60, 70, 18};
+    int numTracks = sizeof(tracks) / sizeof(tracks[0]);
+    int startingTrack = 50; // Assuming the initial track position is 50
+
+    int headMovement = lookDiskScheduling(tracks, numTracks, startingTrack);
+
+    printf("Average Head Movement: %d\n", headMovement);
+
+    return 0;
+}
