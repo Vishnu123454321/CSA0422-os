@@ -1,0 +1,79 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define TOTAL_BLOCKS 16
+#define INODE_BLOCKS 8
+#define FILE_BLOCKS (TOTAL_BLOCKS - INODE_BLOCKS)
+#define MIN_FILE_SIZE 1
+
+// Function to allocate blocks to a file
+void allocateBlocks(int fileBlocks[], int numBlocks, int startBlock) {
+    printf("Allocating Blocks: ");
+    for (int i = 0; i < numBlocks; i++) {
+        fileBlocks[i] = startBlock + i;
+        printf("%d ", fileBlocks[i]);
+    }
+    printf("\n");
+}
+
+// Function to check if blocks are free
+int areBlocksFree(int fileBlocks[], int numBlocks, int blockStatus[]) {
+    for (int i = 0; i < numBlocks; i++) {
+        if (blockStatus[fileBlocks[i]] == 1) {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+int main() {
+    int blockStatus[TOTAL_BLOCKS] = {0}; // Array to track the status of blocks (0 represents free, 1 represents allocated)
+    int fileBlocks[FILE_BLOCKS] = {0}; // Array to store the allocated blocks for a file
+    int startBlock = INODE_BLOCKS; // Starting block for file allocation
+
+    int fileSize;
+    printf("Enter the file size (in KB): ");
+    scanf("%d", &fileSize);
+
+    // Check if file size is valid
+    if (fileSize < MIN_FILE_SIZE || fileSize > FILE_BLOCKS) {
+        printf("Invalid file size!\n");
+        return 0;
+    }
+
+    // Find contiguous blocks for file allocation
+    int numBlocks = fileSize;
+    int currentBlock = startBlock;
+
+    while (currentBlock + numBlocks <= TOTAL_BLOCKS) {
+        int foundBlocks = 1;
+        for (int i = currentBlock; i < currentBlock + numBlocks; i++) {
+            if (blockStatus[i] == 1) {
+                foundBlocks = 0;
+                break;
+            }
+        }
+
+        if (foundBlocks) {
+            allocateBlocks(fileBlocks, numBlocks, currentBlock);
+            break;
+        }
+
+        currentBlock++;
+    }
+
+    // Check if contiguous blocks were found
+    if (currentBlock + numBlocks > TOTAL_BLOCKS) {
+        printf("Not enough contiguous blocks available!\n");
+        return 0;
+    }
+
+    // Update the block status to mark the allocated blocks as used
+    for (int i = 0; i < numBlocks; i++) {
+        blockStatus[fileBlocks[i]] = 1;
+    }
+
+    printf("File allocated successfully.\n");
+
+    return 0;
+}
