@@ -1,0 +1,73 @@
+#include <stdio.h>
+#include <stdbool.h>
+
+// Function to check if a page exists in the page frames
+bool pageExists(int page, int pageFrames[], int numFrames) {
+    for (int i = 0; i < numFrames; i++) {
+        if (pageFrames[i] == page) {
+            return true;
+        }
+    }
+    return false;
+}
+
+// Function to find the optimal page to replace
+int findOptimalPage(int pageSequence[], int numPages, int pageFrames[], int numFrames, int currentIndex) {
+    int farthestIndex = -1;
+    int optimalPage = -1;
+
+    for (int i = 0; i < numFrames; i++) {
+        int j;
+        for (j = currentIndex + 1; j < numPages; j++) {
+            if (pageSequence[j] == pageFrames[i]) {
+                if (j > farthestIndex) {
+                    farthestIndex = j;
+                    optimalPage = pageFrames[i];
+                }
+                break;
+            }
+        }
+
+        // If the page is not referenced again, return it as the optimal page
+        if (j == numPages) {
+            return pageFrames[i];
+        }
+    }
+
+    return optimalPage;
+}
+
+// Function to simulate the Optimal page replacement algorithm
+int optimalPageReplacement(int pageSequence[], int numPages, int pageFrames[], int numFrames) {
+    int pageFaults = 0;
+
+    for (int i = 0; i < numPages; i++) {
+        if (!pageExists(pageSequence[i], pageFrames, numFrames)) {
+            int optimalPage = findOptimalPage(pageSequence, numPages, pageFrames, numFrames, i);
+            if (optimalPage != -1) {
+                for (int j = 0; j < numFrames; j++) {
+                    if (pageFrames[j] == optimalPage) {
+                        pageFrames[j] = pageSequence[i];
+                        break;
+                    }
+                }
+            }
+            pageFaults++;
+        }
+    }
+
+    return pageFaults;
+}
+
+int main() {
+    int pageFrames[] = {0, 0, 0}; // Page frames
+    int numFrames = sizeof(pageFrames) / sizeof(pageFrames[0]);
+    int pageSequence[] = {4, 1, 2, 4, 3, 2, 1, 5}; // Page reference sequence
+    int numPages = sizeof(pageSequence) / sizeof(pageSequence[0]);
+
+    int pageFaults = optimalPageReplacement(pageSequence, numPages, pageFrames, numFrames);
+
+    printf("Number of Page Faults: %d\n", pageFaults);
+
+    return 0;
+}
