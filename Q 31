@@ -1,0 +1,41 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int abs(int x) {
+    return (x < 0) ? -x : x;
+}
+
+int compare(const void* a, const void* b) {
+    return ((int)a - (int)b);
+}
+
+int main() {
+    int tracks[] = {55, 58, 60, 70, 18};
+    int numTracks = sizeof(tracks) / sizeof(tracks[0]);
+    int currentPosition = 50; // Initial head position
+    int totalHeadMovement = 0;
+    int i;
+    qsort(tracks, numTracks, sizeof(tracks[0]), compare);
+    for (i = 0; i < numTracks; i++) {
+        if (tracks[i] > currentPosition)
+            break;
+    }
+    printf("Order of track movements: ");
+    for (; i < numTracks; i++) {
+        printf("%d ", tracks[i]);
+        totalHeadMovement += abs(currentPosition - tracks[i]);
+        currentPosition = tracks[i];
+    }
+    printf("0 ");
+    for (i = 0; i < numTracks; i++) {
+        printf("%d ", tracks[i]);
+        totalHeadMovement += abs(currentPosition - tracks[i]);
+        currentPosition = tracks[i];
+    }
+
+    printf("\n");
+    float averageHeadMovement = (float)totalHeadMovement / numTracks;
+    printf("Average head movement: %.2f\n", averageHeadMovement);
+
+    return 0;
+}
