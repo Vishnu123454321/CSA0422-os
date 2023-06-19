@@ -1,0 +1,60 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Function to sort the tracks in ascending order
+void sortTracks(int tracks[], int n) {
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = 0; j < n - i - 1; j++) {
+            if (tracks[j] > tracks[j + 1]) {
+                int temp = tracks[j];
+                tracks[j] = tracks[j + 1];
+                tracks[j + 1] = temp;
+            }
+        }
+    }
+}
+
+// Function to calculate the average head movement
+float calculateAverageHeadMovement(int tracks[], int n, int start) {
+    int headMovement = 0;
+    int currentTrack = start;
+    int direction = 1; // 1 represents moving towards higher tracks, -1 represents moving towards lower tracks
+    int currentIndex = 0;
+
+    // Find the index where the current track exists
+    while (tracks[currentIndex] < currentTrack && currentIndex < n) {
+        currentIndex++;
+    }
+
+    // Calculate head movement while scanning towards higher tracks
+    for (int i = currentIndex; i < n; i++) {
+        headMovement += abs(tracks[i] - currentTrack);
+        currentTrack = tracks[i];
+    }
+
+    // Change the direction and update the current track
+    direction = -1;
+    currentIndex--;
+
+    // Calculate head movement while scanning towards lower tracks
+    for (int i = currentIndex; i >= 0; i--) {
+        headMovement += abs(tracks[i] - currentTrack);
+        currentTrack = tracks[i];
+    }
+
+    return (float)headMovement / n;
+}
+
+int main() {
+    int tracks[] = {55, 58, 60, 70, 18, 90, 150, 160, 184};
+    int numOfTracks = sizeof(tracks) / sizeof(tracks[0]);
+    int startingTrack = 50; // Assuming the initial track position is 50
+
+    sortTracks(tracks, numOfTracks);
+
+    float averageHeadMovement = calculateAverageHeadMovement(tracks, numOfTracks, startingTrack);
+
+    printf("Average Head Movement: %.2f\n", averageHeadMovement);
+
+    return 0;
+}
