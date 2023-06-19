@@ -1,0 +1,88 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Structure to represent a memory partition
+typedef struct {
+    int id; // ID of the memory partition
+    int size; // Size of the memory partition
+    int allocated; // Flag to indicate if the partition is allocated or not
+} MemoryPartition;
+
+// Structure to represent a process
+typedef struct {
+    int id; // ID of the process
+    int size; // Size of the process
+    int partitionId; // ID of the allocated memory partition
+} Process;
+
+// Function to find the worst-fit memory partition for a process
+int findWorstFitPartition(MemoryPartition partitions[], int numPartitions, int processSize) {
+    int worstFitIndex = -1;
+    int worstFitSize = -1;
+
+    for (int i = 0; i < numPartitions; i++) {
+        if (partitions[i].allocated == 0 && partitions[i].size >= processSize) {
+            if (worstFitIndex == -1 || partitions[i].size > worstFitSize) {
+                worstFitIndex = i;
+                worstFitSize = partitions[i].size;
+            }
+        }
+    }
+
+    return worstFitIndex;
+}
+
+// Function to allocate memory partitions to processes using worst-fit algorithm
+void allocateMemory(Process processes[], int numProcesses, MemoryPartition partitions[], int numPartitions) {
+    for (int i = 0; i < numProcesses; i++) {
+        int processSize = processes[i].size;
+        int partitionIndex = findWorstFitPartition(partitions, numPartitions, processSize);
+
+        if (partitionIndex != -1) {
+            partitions[partitionIndex].allocated = 1;
+            partitions[partitionIndex].size -= processSize;
+            processes[i].partitionId = partitions[partitionIndex].id;
+        } else {
+            processes[i].partitionId = -1;
+        }
+    }
+}
+
+// Function to print the memory allocation details
+void printMemoryAllocation(Process processes[], int numProcesses) {
+    printf("Process\tSize\tPartition\n");
+
+    for (int i = 0; i < numProcesses; i++) {
+        printf("%d\t%d KB\t", processes[i].id, processes[i].size);
+        if (processes[i].partitionId != -1) {
+            printf("%d\n", processes[i].partitionId);
+        } else {
+            printf("Not Allocated\n");
+        }
+    }
+}
+
+int main() {
+    MemoryPartition partitions[] = {
+        {1, 40, 0},
+        {2, 10, 0},
+        {3, 30, 0},
+        {4, 60, 0}
+    };
+
+    Process processes[] = {
+        {1, 100, 0},
+        {2, 50, 0},
+        {3, 30, 0},
+        {4, 120, 0},
+        {5, 35, 0}
+    };
+
+    int numPartitions = sizeof(partitions) / sizeof(partitions[0]);
+    int numProcesses = sizeof(processes) / sizeof(processes[0]);
+
+    allocateMemory(processes, numProcesses, partitions, numPartitions);
+    printMemoryAllocation(processes, numProcesses);
+
+    return 0;
+}
